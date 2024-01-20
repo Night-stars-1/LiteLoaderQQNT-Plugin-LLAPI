@@ -2,7 +2,7 @@
  * @Author: Night-stars-1 nujj1042633805@gmail.com
  * @Date: 2023-08-19 13:57:11
  * @LastEditors: Night-stars-1 nujj1042633805@gmail.com
- * @LastEditTime: 2024-01-17 17:10:09
+ * @LastEditTime: 2024-01-20 17:00:39
  * @Description: 
  * 
  * Copyright (c) 2023 by Night-stars-1, All Rights Reserved. 
@@ -74,7 +74,7 @@
 - **用法**
 
     ```js
-    LLAPI.on("dom-up-messages", (event, target, msgIds) => {
+    LLAPI.on("context-msg-menu", (event, target, msgIds) => {
         console.log(event, target, msgIds);
     })
     ```

@@ -1,3 +1,8 @@
+/*
+ * @Date: 2024-01-20 16:53:41
+ * @LastEditors: Night-stars-1 nujj1042633805@gmail.com
+ * @LastEditTime: 2024-01-20 16:58:31
+ */
 import { defineConfig } from "vitepress";
 
 
@@ -5,17 +10,16 @@ import { defineConfig } from "vitepress";
 export default defineConfig({
     srcDir: "src",
     lang: "zh-Hans",
-    title: "LiteLoaderQQNT",
-    description: "QQNT 插件加载器",
+    title: "LLAPI",
+    description: "封装部分API，简化开发",
     sitemap: {
-        hostname: "https://liteloaderqqnt.github.io"
+        hostname: ""
     },
     themeConfig: {
         // https://vitepress.dev/reference/default-theme-config
         nav: [
             { text: "首页", link: "/" },
-            { text: "开始使用", link: "/guide/introduction", activeMatch: "/guide" },
-            { text: "开发文档", link: "/docs/introduction", activeMatch: "/docs" }
+            { text: "开始使用", link: "/docs/LLAPI", activeMatch: "/docs" },
         ],
         sidebar: [
             {
@@ -25,38 +29,14 @@ export default defineConfig({
                         text: "开始使用",
                         collapsed: false,
                         items: [
-                            { text: "介绍", link: "/guide/introduction" },
-                            { text: "安装", link: "/guide/install" },
-                            { text: "插件", link: "/guide/plugins" }
+                            { text: "LLAPI", link: "/docs/LLAPI" }
                         ]
                     },
-                    {
-                        text: "开发文档",
-                        collapsed: false,
-                        items: [
-                            { text: "开始你的第一个插件", link: "/docs/introduction" },
-                            { text: "LiteLoader API", link: "/docs/liteloader-api" },
-                            { text: "Web Components", link: "/docs/web-components" },
-                            { text: "自定义协议方案", link: "/docs/protocol-scheme" }
-                        ]
-                    }
-                ]
-            },
-            {
-                text: "其他",
-                items: [
-                    {
-                        text: "LLAPI",
-                        collapsed: false,
-                        items: [
-                            { text: "LLAPI用法", link: "/others/LLAPI" },
-                        ]
-                    }
                 ]
             }
         ],
         editLink: {
-            pattern: "https://github.com/LiteLoaderQQNT/LiteLoaderQQNT.github.io/edit/main/src/:path",
+            pattern: "https://github.com/Night-stars-1/LiteLoaderQQNT-Plugin-LLAPI/edit/DOCS/src/:path",
             text: "在GitHub上编辑此页面"
         },
         lastUpdated: {
@@ -75,7 +55,7 @@ export default defineConfig({
         },
         footer: {
             message: "基于 MIT 许可发布",
-            copyright: "版权所有 © 2024 LiteLoaderQQNT"
+            copyright: "版权所有 © 2024 Night-stars-1"
         },
         externalLinkIcon: true
     }
