@@ -13,7 +13,7 @@ export default defineConfig({
     title: "LLAPI",
     description: "封装部分API，简化开发",
     sitemap: {
-        hostname: ""
+        hostname: "https://llapi.srap.link"
     },
     themeConfig: {
         // https://vitepress.dev/reference/default-theme-config
