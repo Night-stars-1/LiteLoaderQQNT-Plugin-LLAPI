@@ -232,24 +232,25 @@ class Api extends EventEmitter {
         }]
      */
     async sendMessage(peer, elements) {
-        console.log("sendElements", elements)
+        let msg = {
+            msgId: "0",
+            peer: destructor.destructPeer(peer),
+            msgElements: await Promise.all(
+                elements.map(async (element) => {
+                    if (element.type == "text") return destructor.destructTextElement(element);
+                    else if (element.type == "reply") return destructor.destructReplyElement(element);
+                    else if (element.type == "image") return destructor.destructImageElement(element, await media.prepareImageElement(element.file));
+                    else if (element.type == "voice") return destructor.destructPttElement(element, await media.prepareVoiceElement(element.file));
+                    else if (element.type == "face") return destructor.destructFaceElement(element);
+                    else if (element.type == "raw") return destructor.destructRawElement(element);
+                    else return null;
+                }),
+            ),
+            msgAttributeInfos: new Map()
+        }
+        // console.log("ntCall send", msg)
         ntCall("ns-ntApi", "nodeIKernelMsgService/sendMsg", [
-            {
-                msgId: "0",
-                peer: destructor.destructPeer(peer),
-                msgElements: await Promise.all(
-                    elements.map(async (element) => {
-                        if (element.type == "text") return destructor.destructTextElement(element);
-                        else if (element.type == "reply") return destructor.destructReplyElement(element);
-                        else if (element.type == "image") return destructor.destructImageElement(element, await media.prepareImageElement(element.file));
-                        else if (element.type == "voice") return destructor.destructPttElement(element, await media.prepareVoiceElement(element.file));
-                        else if (element.type == "face") return destructor.destructFaceElement(element);
-                        else if (element.type == "raw") return destructor.destructRawElement(element);
-                        else return null;
-                    }),
-                ),
-                msgAttributeInfos: new Map()
-            },
+            msg,
             null,
         ]);
         function checkSendRecord() {
