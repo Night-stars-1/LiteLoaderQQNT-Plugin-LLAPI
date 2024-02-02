@@ -2,7 +2,7 @@
  * @Author: Night-stars-1 nujj1042633805@gmail.com
  * @Date: 2023-07-22 00:36:20
  * @LastEditors: Night-stars-1 nujj1042633805@gmail.com
- * @LastEditTime: 2024-02-02 16:34:43
+ * @LastEditTime: 2024-02-02 20:36:20
  * @Description: 
  * 
  * Copyright (c) 2023 by Night-stars-1, All Rights Reserved. 
@@ -28,9 +28,12 @@ function printObject(object) {
 function onBrowserWindowCreated(window) {
     const original_send = window.webContents.send;
     const patched_send = (channel, ...args) => {
+        // output("received ipc msg: ", JSON.stringify(args));
         if (args?.[1]?.[0]?.cmdName === "nodeIKernelMsgListener/onRecvMsg") {
             window.webContents.send('new_message-main', args);
         } else if (args?.[1]?.[0]?.cmdName === "nodeIKernelGroupListener/onGroupListUpdate") {
+            window.webContents.send('groups-list-updated-main', args);
+        } else if (args?.[1]?.[0]?.cmdName === "onGroupListUpdate") {
             window.webContents.send('groups-list-updated-main', args);
         } else if (args?.[1]?.[0]?.cmdName === "onBuddyListChange") {
             window.webContents.send('friends-list-updated-main', args);
@@ -45,8 +48,11 @@ function onBrowserWindowCreated(window) {
         } else if (args?.[1]?.[0]?.cmdName === "nodeIKernelGroupListener/onGroupSingleScreenNotifies") {
             // 群聊通知
         }
-
-        if (!channel.includes("LiteLoader") && !Buffer.isBuffer(args?.[1])) {
+        else if (args?.[1]?.[0]?.cmdName === "nodeIKernelMsgListener/onAddSendMsg") {
+            // 发送消息成功
+            window.webContents.send('new-send-message-main', args);
+        }
+        if (!channel.includes("LiteLoader")) {
             if (args?.[1]?.account?.length > 0 && account == "0") {
                 window.webContents.send('user-login-main', args[1]);
             }

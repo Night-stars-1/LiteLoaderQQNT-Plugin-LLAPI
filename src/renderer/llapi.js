@@ -9,6 +9,8 @@ import { destructor } from "./destructor.js";
 import { media } from "./media.js";
 import { output, ntCall } from "./utils.js";
 
+let sendRecords = []
+
 export const qmenu = []
 
 const ipcRenderer_on = LLAPI_PRE.ipcRenderer_LL_on;
@@ -51,14 +53,14 @@ class Api extends EventEmitter {
      * }
      * {
      *      type: "qqFace",
-     *      id: "344", 
-     *      label: "[大怨种]", 
+     *      id: "344",
+     *      label: "[大怨种]",
      *      path: "appimg://H:/QQ/nt_qq/global/nt_data/Emoji/emoji-resource/sysface_res/apng/s344.png"
      * }
      * {
      *      type: "pic",
-     *      src: PATH, 
-     *      picSubType: 0, 
+     *      src: PATH,
+     *      picSubType: 0,
      * }
      */
     add_editor(message) {
@@ -230,6 +232,7 @@ class Api extends EventEmitter {
         }]
      */
     async sendMessage(peer, elements) {
+        console.log("sendElements", elements)
         ntCall("ns-ntApi", "nodeIKernelMsgService/sendMsg", [
             {
                 msgId: "0",
@@ -237,7 +240,9 @@ class Api extends EventEmitter {
                 msgElements: await Promise.all(
                     elements.map(async (element) => {
                         if (element.type == "text") return destructor.destructTextElement(element);
+                        else if (element.type == "reply") return destructor.destructReplyElement(element);
                         else if (element.type == "image") return destructor.destructImageElement(element, await media.prepareImageElement(element.file));
+                        else if (element.type == "voice") return destructor.destructPttElement(element, await media.prepareVoiceElement(element.file));
                         else if (element.type == "face") return destructor.destructFaceElement(element);
                         else if (element.type == "raw") return destructor.destructRawElement(element);
                         else if (element.type == "ptt") return destructor.destructPttElement(element, await media.preparePttElement(element.file));
@@ -245,6 +250,27 @@ class Api extends EventEmitter {
                     }),
                 ),
                 msgAttributeInfos: new Map()
+            },
+            null,
+        ]);
+        function checkSendRecord() {
+            return new Promise((resolve, reject) => {
+                if (sendRecords.length > 0) {
+                    resolve(sendRecords.pop());
+                } else {
+                    setTimeout(() => {
+                        resolve(checkSendRecord());
+                    }, 500);
+                }
+            });
+        }
+        return checkSendRecord()
+    }
+    async recallMessage(peer, msgIds) {
+        ntCall("ns-ntApi", "nodeIKernelMsgService/recallMsg", [
+            {
+                msgIds,
+                peer: destructor.destructPeer(peer),
             },
             null,
         ]);
@@ -334,9 +360,13 @@ class Api extends EventEmitter {
      * @param {number} num 数量
      */
     async getGroupMemberList(groupId, num=30) {
+        let sceneId = await ntCall("ns-ntApi", "nodeIKernelGroupService/createMemberListScene", [{
+            groupCode: groupId,
+            scene: "groupMemberList_MainWindow"
+        }])
         return await ntCall("ns-ntApi", "nodeIKernelGroupService/getNextMemberList", [
             {
-                sceneId: groupId,
+                sceneId: sceneId,
                 num: num
             },
             null
@@ -370,6 +400,22 @@ ipcRenderer_on('new_message-main', (event, args) => {
      * @description 获取新消息
      */
     apiInstance.emit("new-messages", messages);
+});
+ipcRenderer_on('new-send-message-main', (event, args) => {
+    // const messages = (args?.[1]?.[0]?.payload?.msgList).map((msg) => constructor.constructMessage(msg));
+    /**
+     * @description 消息发送成功
+     */
+    let sendMsg = args?.[1]?.[0]?.payload?.msgRecord
+    sendMsg = constructor.constructMessage(sendMsg)
+    /*
+    * {
+    *   msgId: string,
+    * }
+    * */
+    // console.log("new-send-message-main", sendMsg)
+    sendRecords.push(sendMsg)
+    apiInstance.emit("new-send-messages", [sendMsg]);
 });
 ipcRenderer_on('user-info-list-main', (event, args) => {
     apiInstance.emit("user-info-list", args);

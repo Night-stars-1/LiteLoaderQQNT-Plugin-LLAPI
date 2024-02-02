@@ -10,14 +10,14 @@ class Destructor {
             elementId: "",
             textElement: {
                 content: element.content,
-                atType: 0,
-                atUid: "",
+                atType: element.atType || 0,
+                atUid: element.atUid || "",
                 atTinyId: "",
-                atNtUid: "",
+                atNtUid: element.atNtUid,
             },
         };
     }
-    
+
     destructXmlElement(element) {
         return {
             elementType: 8,
@@ -41,7 +41,7 @@ class Destructor {
             },
         };
     }
-    
+
     destructImageElement(element, picElement) {
         return {
             elementType: 2,
@@ -49,7 +49,27 @@ class Destructor {
             picElement: picElement,
         };
     }
-    
+
+    destructPttElement(element, pttElement) {
+        return {
+            elementType: 4,
+            elementId: "",
+            pttElement
+        }
+    }
+    destructReplyElement(element) {
+        return {
+            elementType: 7,
+            elementId: "",
+            replyElement: {
+                replayMsgSeq: element.msgSeq, // raw.msgSeq
+                replayMsgId: element.msgId,  // raw.msgId
+                senderUin: element.senderUin,
+                senderUinStr: element.senderUinStr,
+            }
+        }
+    }
+
     destructFaceElement(element) {
         return {
             elementType: 6,
@@ -71,7 +91,7 @@ class Destructor {
             },
         };
     }
-    
+
     destructRawElement(element) {
         return element.raw;
     }
