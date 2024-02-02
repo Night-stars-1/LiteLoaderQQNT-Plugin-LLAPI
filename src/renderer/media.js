@@ -1,9 +1,9 @@
 /*
  * @Date: 2024-01-17 16:34:19
  * @LastEditors: Night-stars-1 nujj1042633805@gmail.com
- * @LastEditTime: 2024-01-25 19:36:55
+ * @LastEditTime: 2024-02-02 15:55:39
  */
-import { ntCall } from "./utils.js";
+import { ntCall, output } from "./utils.js";
 
 const exists = LLAPI_PRE.exists;
 
@@ -45,6 +45,46 @@ class Media {
             summary: "",
         };
     }
+
+    async preparePttElement(file) {
+        const ext = file.split(".").pop();
+        const md5 = await ntCall("ns-FsApi", "getFileMd5", [file]);
+        const fileName = `${md5}.${ext}`;
+        const filePath = await ntCall("ns-ntApi", "nodeIKernelMsgService/getRichMediaFilePathForGuild", [
+            {
+                path_info: {
+                    md5HexStr: md5,
+                    fileName: fileName,
+                    elementType: 2,
+                    elementSubType: 0,
+                    thumbSize: 0,
+                    needCreate: true,
+                    downloadType: 1,
+                    file_uuid: ""
+                }
+            }
+        ]);
+        await ntCall("ns-FsApi", "copyFile", [{ fromPath: file, toPath: filePath }]);
+        const fileSize = await ntCall("ns-FsApi", "getFileSize", [file]);
+        return {
+            fileName: fileName,
+            filePath: filePath,
+            md5HexStr: md5,
+            fileSize: fileSize,
+            duration: 7,
+            formatType: 1,
+            voiceType: 1,
+            voiceChangeType: 0,
+            canConvert2Text: true,
+            waveAmplitudes: [
+                0, 18, 9, 23, 16, 17, 16, 15, 44, 17, 24, 20, 14, 15, 17,
+            ],
+            fileSubId: "",
+            playState: 1,
+            autoConvertText: 0,
+        };
+    }
+    
     async downloadMedia(msgId, elementId, peerUid, chatType, filePath, originalFilePath) {
         if (await exists(originalFilePath)) return;
         return await ntCall("ns-ntApi", "nodeIKernelMsgService/downloadRichMedia", [

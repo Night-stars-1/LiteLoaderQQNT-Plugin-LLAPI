@@ -1,7 +1,7 @@
 /*
  * @Date: 2024-01-17 16:57:23
  * @LastEditors: Night-stars-1 nujj1042633805@gmail.com
- * @LastEditTime: 2024-01-24 02:25:26
+ * @LastEditTime: 2024-02-02 15:59:09
  */
 import { constructor } from "./msgConstructor.js";
 import { EventEmitter } from "./eventEmitter.js";
@@ -240,6 +240,7 @@ class Api extends EventEmitter {
                         else if (element.type == "image") return destructor.destructImageElement(element, await media.prepareImageElement(element.file));
                         else if (element.type == "face") return destructor.destructFaceElement(element);
                         else if (element.type == "raw") return destructor.destructRawElement(element);
+                        else if (element.type == "ptt") return destructor.destructPttElement(element, await media.preparePttElement(element.file));
                         else return null;
                     }),
                 ),

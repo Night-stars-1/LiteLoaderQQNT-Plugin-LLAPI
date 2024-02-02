@@ -2,7 +2,7 @@
  * @Author: Night-stars-1
  * @Date: 2023-08-03 23:18:21
  * @LastEditors: Night-stars-1 nujj1042633805@gmail.com
- * @LastEditTime: 2024-01-22 15:29:30
+ * @LastEditTime: 2024-02-02 19:59:12
  * @Description: 借鉴了NTIM, 和其他大佬的代码
  * 
  * Copyright (c) 2023 by Night-stars-1, All Rights Reserved. 
@@ -76,7 +76,7 @@ function onLoad() {
                     })
                 }
                 // QQ菜单弹出
-                if (node?.previousSibling?.classList?.[0] == "q-context-menu"  && (node?.previousSibling?.innerText.includes("转发") || node?.previousSibling?.innerText.includes("转文字")) && qmenu.length > 0) {
+                if (node?.previousSibling?.classList?.[0] === "q-context-menu"  && (node?.previousSibling?.innerText.includes("转发") || node?.previousSibling?.innerText.includes("转文字")) && qmenu.length > 0) {
                     const ndoe_rect = node.previousSibling.getBoundingClientRect()
                     const message_element = document.elementFromPoint(ndoe_rect.x, ndoe_rect.y)
                     //?.closest(".msg-content-container")?.closest(".message");
@@ -87,8 +87,11 @@ function onLoad() {
                     });
                 }
                 // QQ消息更新
-                if (node.className == "ml-item" || node.className == "message vue-component") {
+                if (node.className === "ml-item" || node.className === "message vue-component") {
                     apiInstance.emit("dom-up-messages", node);
+                }
+                if (node.classList?.[0] === "nav-item") {
+                    apiInstance.emit("dom-up-nav-item", node);
                 }
                 const ckeditorInstance = document.querySelector(".ck.ck-content.ck-editor__editable")?.ckeditorInstance;
                 if (!first_ckeditorInstance && ckeditorInstance) {
@@ -110,15 +113,13 @@ function onLoad() {
     });
     observer.observe(document.body, { childList: true, subtree: true });
     document.addEventListener('contextmenu', monitor_qmenu)
-    navigation.addEventListener("navigatesuccess", function(event) {
-        apiInstance.emit("change_href", location)
-    });
-    const changeHrefInterval = setInterval(() => {
-        if (location.hash == "#/main/message") {
+    if (location.hash == "#/blank") {
+        navigation.addEventListener("navigatesuccess", () => {
             apiInstance.emit("change_href", location)
-            clearInterval(changeHrefInterval);
-        }
-    }, 3000);
+        });
+    } else {
+        apiInstance.emit("change_href", location)
+    }
 }
 
 hookVue3()

@@ -2,7 +2,7 @@
  * @Author: Night-stars-1 nujj1042633805@gmail.com
  * @Date: 2023-07-22 00:36:20
  * @LastEditors: Night-stars-1 nujj1042633805@gmail.com
- * @LastEditTime: 2024-01-23 23:26:47
+ * @LastEditTime: 2024-02-02 16:34:43
  * @Description: 
  * 
  * Copyright (c) 2023 by Night-stars-1, All Rights Reserved. 
@@ -45,11 +45,12 @@ function onBrowserWindowCreated(window) {
         } else if (args?.[1]?.[0]?.cmdName === "nodeIKernelGroupListener/onGroupSingleScreenNotifies") {
             // 群聊通知
         }
-        if (!channel.includes("LiteLoader")) {
+
+        if (!channel.includes("LiteLoader") && !Buffer.isBuffer(args?.[1])) {
             if (args?.[1]?.account?.length > 0 && account == "0") {
                 window.webContents.send('user-login-main', args[1]);
             }
-            // output(channel, JSON.stringify(args));
+            // output(channel, JSON.stringify(args[1]));
         }
         if (args[0]?.callbackId) {
             const id = args[0].callbackId;
@@ -87,6 +88,7 @@ function onBrowserWindowCreated(window) {
             if (data && data[0] == "openExternalWindow") {
                 // output(JSON.stringify(args))
             }
+            // output(JSON.stringify(args))
         }
         if (name === "___!add_message_list") {
             const peer = args[0][0]

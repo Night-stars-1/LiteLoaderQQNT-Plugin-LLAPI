@@ -4,7 +4,7 @@
     "name": "LLAPI",
     "slug": "LLAPI",
     "description": "LiteLoaderQQNT的插件API",
-    "version": "1.2.1",
+    "version": "1.2.2",
     "icon": "./icon.png",
     "authors": [
         {
@@ -16,7 +16,7 @@
         "repo": "Night-stars-1/LiteLoaderQQNT-Plugin-LLAPI",
         "branch": "main",
         "release": {
-            "tag": "v1.2.1"
+            "tag": "v1.2.2"
         }
     },
     "platform": [
