@@ -386,10 +386,10 @@ class Api extends EventEmitter {
     }
     /**
      * @description 发送好友赞
-     * @param {String} uid 对方的ID
-     * @param {Number} count 点赞次数
+     * @param {String} uid qq代号
+     * @param {Number} count 点赞次数，默认一次
      */
-    async addLike(uid, count) {
+    async addLike(uid, count=1) {
         ntCall("ns-ntApi", "nodeIKernelProfileLikeService/setBuddyProfileLike", [
             {
                 doLikeUserInfo:{
