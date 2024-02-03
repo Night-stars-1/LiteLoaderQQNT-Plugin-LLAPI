@@ -384,6 +384,24 @@ class Api extends EventEmitter {
             null
         ]);
     }
+    /**
+     * @description 发送好友赞
+     * @param {String} uid 对方的ID
+     * @param {Number} count 点赞次数
+     */
+    async addLike(uid, count) {
+        ntCall("ns-ntApi", "nodeIKernelProfileLikeService/setBuddyProfileLike", [
+            {
+                doLikeUserInfo:{
+                    friendUid:uid,
+                    sourceId:71,
+                    doLikeCount:count,
+                    doLikeTollCount:0
+                }
+            },
+            null,
+        ]);
+    }
     async test() {
         ntCall("ns-WindowApi", "openExternalWindow", [
             "SettingWindow"
