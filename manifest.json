@@ -4,7 +4,7 @@
     "name": "LLAPI",
     "slug": "LLAPI",
     "description": "LiteLoaderQQNT的插件API",
-    "version": "1.3.1",
+    "version": "1.3.2",
     "icon": "./icon.png",
     "authors": [
         {

@@ -7,7 +7,9 @@
     "babel-loader": "^9.1.3"
   },
   "scripts": {
+    "pre-build-win": "cmd /c \"copy src\\* dist\\src\\ && copy manifest.json dist\\\"",
     "build-renderer": "webpack --config webpack.renderer.config.js",
-    "deploy-win": "cmd /c \"copy dist\\* %USERPROFILE%\\documents\\LiteLoaderQQNT\\plugins\\LiteLoaderQQNT-Plugin-LLAPI\\ && copy dist\\src\\* %USERPROFILE%\\documents\\LiteLoaderQQNT\\plugins\\LiteLoaderQQNT-Plugin-LLAPI\\src\\\""
+    "build": "npm run pre-build-win && npm run build-renderer",
+    "deploy-win": "npm run pre-build-win && cmd /c \"xcopy /Y dist\\* %USERPROFILE%\\documents\\LiteLoaderQQNT\\plugins\\LiteLoaderQQNT-Plugin-LLAPI\\"
   }
 }
