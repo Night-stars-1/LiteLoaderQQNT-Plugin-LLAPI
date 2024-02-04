@@ -1,7 +1,7 @@
 /*
  * @Date: 2024-01-17 16:57:23
  * @LastEditors: Night-stars-1 nujj1042633805@gmail.com
- * @LastEditTime: 2024-02-02 15:59:09
+ * @LastEditTime: 2024-02-05 02:06:29
  */
 import { constructor } from "./msgConstructor.js";
 import { EventEmitter } from "./eventEmitter.js";
@@ -121,7 +121,9 @@ class Api extends EventEmitter {
             const select = window.getSelection()
             document.querySelector(".ck.ck-content.ck-editor__editable").ckeditorInstance.setData(message)
             const msg_list = document.querySelector(".ck.ck-content p")
-            select.selectAllChildren(msg_list.childNodes[msg_list.childNodes.length-1])
+            select.collapse(msg_list.childNodes[msg_list.childNodes.length-1])
+            select.modify("move", "forward", "paragraph");
+            ///select.collapseToEnd()
             return true
         } catch (error) {
             return false
@@ -385,10 +387,15 @@ class Api extends EventEmitter {
         ]);
     }
     async test() {
-        ntCall("ns-WindowApi", "openExternalWindow", [
-            "SettingWindow"
+        const test = await ntCall("ns-ntApi", "nodeIKernelAvatarService/getMembersAvatarPath", [
+            {
+                uids: [
+                    "u_"
+                ], 
+                clarity: 0 
+            },
         ]);
-        //console.log(await apiInstance.getGroupMemberList(ee, 30));
+        output(test)
     }
 }
 
