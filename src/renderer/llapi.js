@@ -1,7 +1,7 @@
 /*
  * @Date: 2024-01-17 16:57:23
  * @LastEditors: Night-stars-1 nujj1042633805@gmail.com
- * @LastEditTime: 2024-01-24 02:25:26
+ * @LastEditTime: 2024-02-02 15:59:09
  */
 import { constructor } from "./msgConstructor.js";
 import { EventEmitter } from "./eventEmitter.js";
@@ -232,25 +232,24 @@ class Api extends EventEmitter {
         }]
      */
     async sendMessage(peer, elements) {
-        let msg = {
-            msgId: "0",
-            peer: destructor.destructPeer(peer),
-            msgElements: await Promise.all(
-                elements.map(async (element) => {
-                    if (element.type == "text") return destructor.destructTextElement(element);
-                    else if (element.type == "reply") return destructor.destructReplyElement(element);
-                    else if (element.type == "image") return destructor.destructImageElement(element, await media.prepareImageElement(element.file));
-                    else if (element.type == "voice") return destructor.destructPttElement(element, await media.prepareVoiceElement(element.file));
-                    else if (element.type == "face") return destructor.destructFaceElement(element);
-                    else if (element.type == "raw") return destructor.destructRawElement(element);
-                    else return null;
-                }),
-            ),
-            msgAttributeInfos: new Map()
-        }
-        // console.log("ntCall send", msg)
+        console.log("sendElements", elements)
         ntCall("ns-ntApi", "nodeIKernelMsgService/sendMsg", [
-            msg,
+            {
+                msgId: "0",
+                peer: destructor.destructPeer(peer),
+                msgElements: await Promise.all(
+                    elements.map(async (element) => {
+                        if (element.type == "text") return destructor.destructTextElement(element);
+                        else if (element.type == "reply") return destructor.destructReplyElement(element);
+                        else if (element.type == "image") return destructor.destructImageElement(element, await media.prepareImageElement(element.file));
+                        else if (element.type == "voice") return destructor.destructPttElement(element, await media.prepareVoiceElement(element.file));
+                        else if (element.type == "face") return destructor.destructFaceElement(element);
+                        else if (element.type == "raw") return destructor.destructRawElement(element);
+                        else return null;
+                    }),
+                ),
+                msgAttributeInfos: new Map()
+            },
             null,
         ]);
         function checkSendRecord() {
@@ -382,6 +381,24 @@ class Api extends EventEmitter {
                 uin: uin
             },
             null
+        ]);
+    }
+    /**
+     * @description 发送好友赞
+     * @param {String} uid qq代号
+     * @param {Number} count 点赞次数，默认一次
+     */
+    async addLike(uid, count=1) {
+        ntCall("ns-ntApi", "nodeIKernelProfileLikeService/setBuddyProfileLike", [
+            {
+                doLikeUserInfo:{
+                    friendUid:uid,
+                    sourceId:71,
+                    doLikeCount:count,
+                    doLikeTollCount:0
+                }
+            },
+            null,
         ]);
     }
     async test() {

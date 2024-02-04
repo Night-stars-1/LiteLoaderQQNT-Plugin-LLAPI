@@ -1,7 +1,7 @@
 /*
  * @Date: 2024-01-17 16:33:45
  * @LastEditors: Night-stars-1 nujj1042633805@gmail.com
- * @LastEditTime: 2024-01-25 19:37:57
+ * @LastEditTime: 2024-02-02 15:56:32
  */
 class Destructor {
     destructTextElement(element) {
@@ -79,8 +79,10 @@ class Destructor {
                 faceType: element.faceType == "normal" ? 1 : element.faceType == "normal-extended" ? 2 : element.faceType == "super" ? 3 : element.faceType,
                 ...((element.faceType == "super" || element.faceType == 3) && {
                     packId: "1",
-                    stickerId: (element.faceSuperIndex || "0").toString(),
-                    stickerType: 1,
+                    faceText: element.faceText.toString(),
+                    stickerId: (element.stickerId || "0").toString(),
+                    imageType: 1,
+                    stickerType: element.stickerType || 1,
                     sourceType: 1,
                     resultId: "",
                     superisedId: "",
@@ -94,6 +96,14 @@ class Destructor {
         return element.raw;
     }
 
+    destructPttElement(element, pttElement) {
+        return {
+            elementType: 4,
+            elementId: "",
+            pttElement: pttElement,
+        };
+    }
+    
     destructPeer(peer) {
         const chatTypeMap = {
             "friend": 1,
