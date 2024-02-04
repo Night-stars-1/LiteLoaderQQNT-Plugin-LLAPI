@@ -8,46 +8,6 @@ import { ntCall, output } from "./utils.js";
 const exists = LLAPI_PRE.exists;
 
 class Media {
-    async prepareVoiceElement(file) {
-        // const type = await ntCall("ns-fsApi", "getFileType", [file]);
-        const ext = file.split(".").pop();  // 支持amr
-        const md5 = await ntCall("ns-FsApi", "getFileMd5", [file]);
-        const fileName = `${md5}.${ext}`;
-        const filePath = await ntCall("ns-ntApi", "nodeIKernelMsgService/getRichMediaFilePathForGuild", [
-            {path_info:{
-                md5HexStr: md5,
-                fileName: fileName,
-                elementType: 4,
-                elementSubType: 0,
-                thumbSize: 0,
-                needCreate: true,
-                fileType: 1,  // 这个未知
-                downloadType: 1,
-                file_uuid: ""
-            }}
-
-        ]);
-        await ntCall("ns-FsApi", "copyFile", [{fromPath: file, toPath: filePath}]);
-        const fileSize = await ntCall("ns-FsApi", "getFileSize", [file]);
-        return {
-            canConvert2Text: true,
-            fileName: fileName,
-            filePath: filePath,
-            md5HexStr: md5,
-            fileId: 0,
-            fileSubId: '',
-            fileSize: fileSize,
-            duration: 2,
-            formatType: 1,
-            voiceType: 1,
-            voiceChangeType: 0,
-            playState: 1,
-            waveAmplitudes: [
-                99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99,
-            ],
-        }
-    }
-
     async prepareImageElement(file) {
 
         const type = await ntCall("ns-FsApi", "getFileType", [file]);
@@ -112,7 +72,7 @@ class Media {
             filePath: filePath,
             md5HexStr: md5,
             fileSize: fileSize,
-            duration: 7,
+            duration: Math.max(1, Math.round(fileSize / 1024 / 3)), // 一秒钟大概是3kb大小, 小于1秒的按1秒算
             formatType: 1,
             voiceType: 1,
             voiceChangeType: 0,

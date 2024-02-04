@@ -96,14 +96,6 @@ class Destructor {
         return element.raw;
     }
 
-    destructPttElement(element, pttElement) {
-        return {
-            elementType: 4,
-            elementId: "",
-            pttElement: pttElement,
-        };
-    }
-    
     destructPeer(peer) {
         const chatTypeMap = {
             "friend": 1,
