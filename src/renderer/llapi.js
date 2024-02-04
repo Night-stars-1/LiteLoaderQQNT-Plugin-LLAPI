@@ -244,10 +244,9 @@ class Api extends EventEmitter {
                         if (element.type == "text") return destructor.destructTextElement(element);
                         else if (element.type == "reply") return destructor.destructReplyElement(element);
                         else if (element.type == "image") return destructor.destructImageElement(element, await media.prepareImageElement(element.file));
-                        else if (element.type == "voice") return destructor.destructPttElement(element, await media.prepareVoiceElement(element.file));
+                        else if (element.type == "voice" || element.type == "ptt") return destructor.destructPttElement(element, await media.preparePttElement(element.file));
                         else if (element.type == "face") return destructor.destructFaceElement(element);
                         else if (element.type == "raw") return destructor.destructRawElement(element);
-                        else if (element.type == "ptt") return destructor.destructPttElement(element, await media.preparePttElement(element.file));
                         else return null;
                     }),
                 ),
@@ -384,6 +383,24 @@ class Api extends EventEmitter {
                 uin: uin
             },
             null
+        ]);
+    }
+    /**
+     * @description 发送好友赞
+     * @param {String} uid qq代号
+     * @param {Number} count 点赞次数，默认一次
+     */
+    async addLike(uid, count=1) {
+        ntCall("ns-ntApi", "nodeIKernelProfileLikeService/setBuddyProfileLike", [
+            {
+                doLikeUserInfo:{
+                    friendUid:uid,
+                    sourceId:71,
+                    doLikeCount:count,
+                    doLikeTollCount:0
+                }
+            },
+            null,
         ]);
     }
     async test() {

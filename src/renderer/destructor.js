@@ -96,17 +96,14 @@ class Destructor {
         return element.raw;
     }
 
-    destructPttElement(element, pttElement) {
-        return {
-            elementType: 4,
-            elementId: "",
-            pttElement: pttElement,
-        };
-    }
-    
     destructPeer(peer) {
+        const chatTypeMap = {
+            "friend": 1,
+            "group": 2,
+            "temp": 100, // 临时私聊消息
+        }
         return {
-            chatType: peer.chatType == "friend" ? 1 : peer.chatType == "group" ? 2 : 1,
+            chatType: chatTypeMap[peer.chatType] || peer.chatType,
             peerUid: peer.uid,
             guildId: "",
         };
