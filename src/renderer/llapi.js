@@ -242,10 +242,9 @@ class Api extends EventEmitter {
                         if (element.type == "text") return destructor.destructTextElement(element);
                         else if (element.type == "reply") return destructor.destructReplyElement(element);
                         else if (element.type == "image") return destructor.destructImageElement(element, await media.prepareImageElement(element.file));
-                        else if (element.type == "voice") return destructor.destructPttElement(element, await media.prepareVoiceElement(element.file));
+                        else if (element.type == "voice" || element.type == "ptt") return destructor.destructPttElement(element, await media.preparePttElement(element.file));
                         else if (element.type == "face") return destructor.destructFaceElement(element);
                         else if (element.type == "raw") return destructor.destructRawElement(element);
-                        else if (element.type == "ptt") return destructor.destructPttElement(element, await media.preparePttElement(element.file));
                         else return null;
                     }),
                 ),

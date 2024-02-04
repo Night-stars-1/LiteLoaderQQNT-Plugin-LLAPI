@@ -7,7 +7,7 @@ module.exports = {
     }, // 入口文件路径
     target: "node",
     output: { // 输出文件配置
-        path: path.resolve(__dirname, 'dist'), // 输出目录路径
+        path: path.resolve(__dirname, 'dist/src'), // 输出目录路径
         filename: '[name].js', // 输出文件名
     },
     externals: [
@@ -44,7 +44,7 @@ module.exports = {
         ]
     },
     optimization: {
-        minimize: true,
+        minimize: false,
         minimizer: [
             new TerserPlugin({
                 extractComments: false,
