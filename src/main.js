@@ -3,7 +3,7 @@ const { existsSync } = require("fs");
 const util = require("util");
 const fs = require("fs");
 const path = require("path");
-const { encode, getDuration } = require("silk-wasm");
+const { encode, getDuration } = require("../silk-wasm");
 
 let peer;
 let account = "0";
