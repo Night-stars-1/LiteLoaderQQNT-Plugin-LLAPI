@@ -1,11 +1,12 @@
 /*
  * @Date: 2024-01-17 16:34:19
- * @LastEditors: Night-stars-1 nujj1042633805@gmail.com
- * @LastEditTime: 2024-02-02 20:36:40
+* LastEditors: Night-stars-1 nujj1042633805@gmail.com
+* LastEditTime: 2024-02-14 23:21:00
  */
 import { ntCall, output } from "./utils.js";
 
 const exists = LLAPI_PRE.exists;
+const getSilk = LLAPI_PRE.getSilk;
 
 class Media {
     async prepareImageElement(file) {
@@ -47,9 +48,11 @@ class Media {
         };
     }
 
-    async preparePttElement(file) {
-        const ext = file.split(".").pop();
-        const md5 = await ntCall("ns-FsApi", "getFileMd5", [file]);
+    async preparePttElement(oldFilePath) {
+        const ext = oldFilePath.split(".").pop();
+        const silkData = await getSilk(oldFilePath)
+        const newFilePath = silkData.path;
+        const md5 = await ntCall("ns-FsApi", "getFileMd5", [newFilePath]);
         const fileName = `${md5}.${ext}`;
         const filePath = await ntCall("ns-ntApi", "nodeIKernelMsgService/getRichMediaFilePathForGuild", [
             {
@@ -65,14 +68,14 @@ class Media {
                 }
             }
         ]);
-        await ntCall("ns-FsApi", "copyFile", [{ fromPath: file, toPath: filePath }]);
-        const fileSize = await ntCall("ns-FsApi", "getFileSize", [file]);
+        await ntCall("ns-FsApi", "copyFile", [{ fromPath: newFilePath, toPath: filePath }]);
+        const fileSize = await ntCall("ns-FsApi", "getFileSize", [filePath]);
         return {
             fileName: fileName,
             filePath: filePath,
             md5HexStr: md5,
             fileSize: fileSize,
-            duration: Math.max(1, Math.round(fileSize / 1024 / 3)), // 一秒钟大概是3kb大小, 小于1秒的按1秒算
+            duration: silkData.duration/1024,
             formatType: 1,
             voiceType: 1,
             voiceChangeType: 0,

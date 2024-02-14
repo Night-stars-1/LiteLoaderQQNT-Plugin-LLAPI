@@ -1,7 +1,10 @@
 /*
+ * @Author: error: error: git config user.name & please set dead value or install git && error: git config user.email & please set dead value or install git & please set dead value or install git
  * @Date: 2024-01-17 16:34:50
- * @LastEditors: Night-stars-1 nujj1042633805@gmail.com
- * @LastEditTime: 2024-01-17 16:35:00
+ * @LastEditors: error: error: git config user.name & please set dead value or install git && error: git config user.email & please set dead value or install git & please set dead value or install git
+ * @LastEditTime: 2024-02-07 00:50:13
+ * @FilePath: \LiteLoader\plugins\LiteLoaderQQNT-Plugin-LLAPI\src\renderer\vue.js
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
 const elements = new WeakMap();
 window.__VUE_ELEMENTS__ = elements;
