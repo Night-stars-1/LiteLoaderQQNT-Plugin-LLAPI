@@ -1,14 +1,14 @@
 /*
  * @Author: Night-stars-1
  * @Date: 2023-08-03 23:18:21
- * @LastEditors: Night-stars-1 nujj1042633805@gmail.com
- * @LastEditTime: 2024-02-02 19:59:12
+* LastEditors: Night-stars-1 nujj1042633805@gmail.com
+* LastEditTime: 2024-02-17 18:48:36
  * @Description: 借鉴了NTIM, 和其他大佬的代码
  * 
  * Copyright (c) 2023 by Night-stars-1, All Rights Reserved. 
  */
 import { hookVue3 } from "./renderer/vue.js";
-import { apiInstance, qmenu } from "./renderer/llapi.js";
+import { apiInstance, qmenu, qGuildMenu } from "./renderer/llapi.js";
 import { output, delay } from "./renderer/utils.js";
 
 //const plugin_path = LiteLoader.plugins.LLAPI.path.plugin;
@@ -71,18 +71,33 @@ function onLoad() {
                     node.querySelectorAll('.image.pic-element').forEach((img_node) => {
                         img_node.addEventListener('contextmenu', monitor_qmenu)
                     })
-                    node.querySelectorAll('.image.market-face-element').forEach((img_node) => {
+                    node.querySelectorAll('.image.market-face-element').forEach((img_node) => { 
                         img_node.addEventListener('contextmenu', monitor_qmenu)
                     })
                 }
                 // QQ菜单弹出
-                if (node?.previousSibling?.classList?.[0] === "q-context-menu"  && (node?.previousSibling?.innerText.includes("转发") || node?.previousSibling?.innerText.includes("转文字")) && qmenu.length > 0) {
+                if (node?.previousSibling?.classList?.[0] === "q-context-menu"
+                    && (node?.previousSibling?.innerText.includes("转发") || node?.previousSibling?.innerText.includes("转文字")) 
+                    && qmenu.length > 0) {
                     const ndoe_rect = node.previousSibling.getBoundingClientRect()
                     const message_element = document.elementFromPoint(ndoe_rect.x, ndoe_rect.y)
                     //?.closest(".msg-content-container")?.closest(".message");
                     qmenu.forEach(o => {
                         o.forEach(listener => {
                             listener(node.previousSibling, message_element);
+                        });
+                    });
+                }
+                // QQ频道菜单弹出
+                if (node?.classList?.[0] === "context-menu"
+                    && node?.innerText.includes("复制")
+                    && qGuildMenu.length > 0) {
+                    const ndoe_rect = node.getBoundingClientRect()
+                    const message_element = document.elementFromPoint(ndoe_rect.x, ndoe_rect.y)
+                    //?.closest(".msg-content-container")?.closest(".message");
+                    qGuildMenu.forEach(o => {
+                        o.forEach(listener => {
+                            listener(node, message_element);
                         });
                     });
                 }

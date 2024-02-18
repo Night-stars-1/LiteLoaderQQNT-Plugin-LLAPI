@@ -1,7 +1,7 @@
 /*
  * @Date: 2024-01-17 16:57:23
 * LastEditors: Night-stars-1 nujj1042633805@gmail.com
-* LastEditTime: 2024-02-14 23:19:45
+* LastEditTime: 2024-02-17 19:05:22
  */
 import { constructor } from "./msgConstructor.js";
 import { EventEmitter } from "./eventEmitter.js";
@@ -12,6 +12,7 @@ import { output, ntCall } from "./utils.js";
 let sendRecords = []
 
 export const qmenu = []
+export const qGuildMenu = []
 
 const ipcRenderer_on = LLAPI_PRE.ipcRenderer_LL_on;
 
@@ -140,8 +141,8 @@ class Api extends EventEmitter {
             const ckeditorInstance = document.querySelector(".ck.ck-content.ck-editor__editable").ckeditorInstance;
             const editorModel = ckeditorInstance.model; // 获取编辑器的 model
             editorModel.change(writer => {
-                const root = ckeditorInstance.model.document.getRoot()
-                const firstParagraph = root.getChild(1);
+                const root = editorModel.document.getRoot()
+                const firstParagraph = root.getChild(1) ?? root.getChild(0);
                 if (firstParagraph && firstParagraph.is('element', 'paragraph')) {
                     // 获取所有子节点
                     const children = Array.from(firstParagraph.getChildren());
@@ -196,6 +197,18 @@ class Api extends EventEmitter {
         qmenu.push(func)
     }
     /**
+     * @description 添加QQ频道消息的右键菜单项目
+     * @param {function} func 函数添加逻辑
+     * @example func:
+     * function abc(qContextMenu) {
+     *     qContextMenu.insertAdjacentHTML('beforeend', separatorHTML)
+     *     qContextMenu.insertAdjacentHTML('beforeend', repeatmsgHTML)
+     * }
+     */
+    add_qGuildMenu(...func) {
+        qGuildMenu.push(func)
+    }
+    /**
      * @description 获取当前用户信息
      * @returns uid: number, uin: number
      */
@@ -234,7 +247,6 @@ class Api extends EventEmitter {
         }]
      */
     async sendMessage(peer, elements) {
-        console.log("sendElements", elements)
         ntCall("ns-ntApi", "nodeIKernelMsgService/sendMsg", [
             {
                 msgId: "0",
@@ -267,6 +279,11 @@ class Api extends EventEmitter {
         }
         return checkSendRecord()
     }
+    /**
+     * 撤回消息
+     * @param {Peer} peer 对方的Peer
+     * @param {string[]} msgIds 消息ID的列表
+     */
     async recallMessage(peer, msgIds) {
         ntCall("ns-ntApi", "nodeIKernelMsgService/recallMsg", [
             {
@@ -278,7 +295,8 @@ class Api extends EventEmitter {
     }
     /**
      * @description 转发消息
-     * @param {Peer} peer 对方的ID
+     * @param {Peer} srcpeer 消息来源的Peer
+     * @param {Peer} dstpeer 转发对象的Peer
      * @param {string[]} msgIds 消息ID的列表
      */
     async forwardMessage(srcpeer, dstpeer, msgIds) {
