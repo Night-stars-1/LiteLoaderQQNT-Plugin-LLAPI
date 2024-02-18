@@ -1,7 +1,7 @@
 /*
  * @Date: 2024-01-17 16:57:23
 * LastEditors: Night-stars-1 nujj1042633805@gmail.com
-* LastEditTime: 2024-02-17 19:05:22
+* LastEditTime: 2024-02-18 16:39:18
  */
 import { constructor } from "./msgConstructor.js";
 import { EventEmitter } from "./eventEmitter.js";
@@ -425,7 +425,7 @@ class Api extends EventEmitter {
         const peer = await this.getPeer();
         await this.sendMessage(peer, [{
             type: "ptt",
-            file: "H:/LiteLoader/xm2467.wav"
+            file: "H:/LiteLoader/xm2467.silk"
         }]);
     }
 }

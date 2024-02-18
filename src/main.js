@@ -1,14 +1,8 @@
-const { ipcMain } = require("electron");
-const { existsSync } = require("fs");
 const util = require("util");
-const fs = require("fs");
-const path = require("path");
-const { encode, getDuration } = require("../silk-wasm");
+const { onLoad, peer, pendingCallbacks } = require("./main/onload");
+const { output } = require("./main/utils");
 
-let peer;
 let account = "0";
-let i = 0;
-const pendingCallbacks = {};
 
 function printObject(object) {
     return util.inspect(object, {
@@ -74,17 +68,15 @@ function onBrowserWindowCreated(window) {
             const data = args[0][1];
             switch (data?.[0]) {
                 case "nodeIKernelMsgService/setMsgRead":
-                    peer = data[1]?.peer;
-                    peer = {
-                        uid: peer.peerUid,
-                        guildId: peer.guildId,
-                        chatType:
-                            peer.chatType == 1
-                                ? "friend"
-                                : peer.chatType == 2
-                                ? "group"
-                                : "others",
-                    };
+                    const msgPeer = data[1]?.peer;
+                    peer.uid = msgPeer.peerUid;
+                    peer.guildId = msgPeer.guildId;
+                    peer.chatType =
+                        msgPeer.chatType == 1
+                            ? "friend"
+                            : msgPeer.chatType == 2
+                            ? "group"
+                            : "others";
                     window.webContents.send("set_message-main");
                     break;
                 case "nodeIKernelMsgService/sendMsg":
@@ -103,15 +95,6 @@ function onBrowserWindowCreated(window) {
                     // output(JSON.stringify(args))
                     break;
             }
-        }
-        if (name === "___!add_message_list") {
-            const peer = args[0][0];
-            const message = args[0][1];
-            const data = [];
-            i++;
-            original_send.call(window.webContents, "IPC_DOWN_2", ...data);
-            const data1 = [];
-            original_send.call(window.webContents, "IPC_DOWN_2", ...data1);
         }
     }
     const ipc_message_proxy =
@@ -151,100 +134,6 @@ function onBrowserWindowCreated(window) {
     window.webContents.on("did-finish-load", () => {
         output("Page finished loading");
     });
-}
-
-// 清理文件夹的函数
-function clearDirectory(directory) {
-    // 读取文件夹中的所有文件和文件夹
-    const files = fs.readdirSync(directory);
-
-    for (const file of files) {
-        // 获取当前文件或文件夹的完整路径
-        const fullPath = path.join(directory, file);
-        // 检查当前路径是文件还是文件夹
-        if (fs.lstatSync(fullPath).isDirectory()) {
-            // 如果是文件夹，递归调用清理函数
-            clearDirectory(fullPath);
-            // 删除空文件夹
-            fs.rmdirSync(fullPath);
-        } else {
-            // 如果是文件，直接删除文件
-            fs.unlinkSync(fullPath);
-        }
-    }
-}
-
-function onLoad() {
-    const pluginDataPath = LiteLoader.plugins.LLAPI.path.data;
-    const pttPath = path.join(pluginDataPath, "ptt");
-    if (!fs.existsSync(pttPath)) {
-        fs.mkdirSync(pttPath, { recursive: true });
-    } else {
-        clearDirectory(pttPath);
-    }
-    // 加载插件时触发
-    ipcMain.on("___!boot", (event) => {
-        if (!event.returnValue) event.returnValue = { enabled: false };
-    });
-
-  ipcMain.on("___!log", (event, level, ...args) => {
-    console[
-      { 0: "debug", 1: "log", 2: "info", 3: "warn", 4: "error" }[level] || "log"
-    ](`[!Renderer:Log:${event.sender.id}]`, ...args);
-  });
-  // 安装
-  ipcMain.handle("LiteLoader.LLAPI_PRE.log", (event, ...message) => {
-    console.log(...message);
-  });
-  ipcMain.handle("LiteLoader.LLAPI_PRE.set_id", (event, id, webContentsId) => {
-    try {
-      pendingCallbacks[id] = "LL_DOWN_" + id;
-    } catch (error) {
-      output(error);
-      return {};
-    }
-  });
-  ipcMain.handle("LiteLoader.LLAPI_PRE.get_peer", (event) => {
-    try {
-      return peer;
-    } catch (error) {
-      output(error);
-      return {};
-    }
-  });
-  ipcMain.handle("LiteLoader.LLAPI_PRE.exists", (event, filePath) => {
-    try {
-      return existsSync(filePath);
-    } catch (error) {
-      console.log(error);
-      return {};
-    }
-  });
-  ipcMain.handle("LiteLoader.LLAPI_PRE.getSilk", async (event, filePath) => {
-    try {
-      const fileName = path.basename(filePath);
-      const ext = path.extname(filePath).toLowerCase()
-      if (ext === ".silk") {
-        const silk_old = fs.readFileSync(filePath);
-        const pcm = await decode(silk_old, 24000).data;
-      } else if (ext === ".wav" || ext === ".pcm") {
-        const pcm = fs.readFileSync(filePath);
-      }
-      const silk = await encode(pcm, 24000);
-      fs.writeFileSync(`${pttPath}/${fileName}`, silk.data);
-      return {
-        path: `${pttPath}/${fileName}`,
-        duration: silk.duration,
-      };
-    } catch (error) {
-      console.log(error);
-      return {};
-    }
-  });
-}
-
-function output(...args) {
-    console.log("\x1b[32m[LLAPI]\x1b[0m", ...args);
 }
 
 onLoad();
