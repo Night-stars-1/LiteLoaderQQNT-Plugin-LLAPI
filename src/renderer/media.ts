@@ -3,14 +3,14 @@
 * LastEditors: Night-stars-1 nujj1042633805@gmail.com
 * LastEditTime: 2024-02-14 23:21:00
  */
-import { ntCall, output } from "./utils.js";
+import { ntCall, output } from "./utils";
 
+declare var LLAPI_PRE: any;
 const exists = LLAPI_PRE.exists;
 const getSilk = LLAPI_PRE.getSilk;
 
 class Media {
-    async prepareImageElement(file) {
-
+    async prepareImageElement(file: string) {
         const type = await ntCall("ns-FsApi", "getFileType", [file]);
         const md5 = await ntCall("ns-FsApi", "getFileMd5", [file]);
         const fileName = `${md5}.${type.ext}`;
@@ -48,7 +48,7 @@ class Media {
         };
     }
 
-    async preparePttElement(oldFilePath) {
+    async preparePttElement(oldFilePath: string) {
         const ext = oldFilePath.split(".").pop();
         const silkData = await getSilk(oldFilePath)
         const newFilePath = silkData.path;
@@ -89,7 +89,7 @@ class Media {
         };
     }
     
-    async downloadMedia(msgId, elementId, peerUid, chatType, filePath, originalFilePath) {
+    async downloadMedia(msgId: string, elementId: string, peerUid: string, chatType: number, filePath: string, originalFilePath: string) {
         if (await exists(originalFilePath)) return;
         return await ntCall("ns-ntApi", "nodeIKernelMsgService/downloadRichMedia", [
             {
@@ -108,4 +108,8 @@ class Media {
     }
 }
 
-export const media = new Media();
+const media = new Media();
+
+export {
+    media
+}

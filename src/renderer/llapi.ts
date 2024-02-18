@@ -1,19 +1,15 @@
-/*
- * @Date: 2024-01-17 16:57:23
-* LastEditors: Night-stars-1 nujj1042633805@gmail.com
-* LastEditTime: 2024-02-18 16:39:18
- */
-import { constructor } from "./msgConstructor.js";
-import { EventEmitter } from "./eventEmitter.js";
-import { destructor } from "./destructor.js";
-import { media } from "./media.js";
-import { output, ntCall } from "./utils.js";
+import { constructor } from "./msgConstructor";
+import { EventEmitter } from "./eventEmitter";
+import { destructor } from "./destructor";
+import { media } from "./media";
+import { output, ntCall } from "./utils";
 
 let sendRecords = []
 
 export const qmenu = []
 export const qGuildMenu = []
 
+declare var LLAPI_PRE: any;
 const ipcRenderer_on = LLAPI_PRE.ipcRenderer_LL_on;
 
 class Api extends EventEmitter {
@@ -170,7 +166,6 @@ class Api extends EventEmitter {
     }
     /**
      * @description 获取消息编辑栏的内容
-     * @returns {string|HTMLElement} message 消息内容
      */
     get_editor() {
         return document.querySelector(".ck.ck-content.ck-editor__editable").ckeditorInstance.getData()
@@ -425,7 +420,7 @@ class Api extends EventEmitter {
         const peer = await this.getPeer();
         await this.sendMessage(peer, [{
             type: "ptt",
-            file: "H:/LiteLoader/xm2467.silk"
+            file: "H:/LiteLoader/xm2467.wav"
         }]);
     }
 }

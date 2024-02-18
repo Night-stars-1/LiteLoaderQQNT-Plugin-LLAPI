@@ -1,21 +1,12 @@
-const util = require("util");
-const { onLoad, peer, pendingCallbacks } = require("./main/onload");
-const { output } = require("./main/utils");
+import { BrowserWindow } from "electron";
 
-let account = "0";
-
-function printObject(object) {
-    return util.inspect(object, {
-        compact: true,
-        depth: null,
-        showHidden: true,
-    });
-}
+import { onLoad, peer, pendingCallbacks } from "./main/onload";
+import { output } from "./main/utils";
 
 // 创建窗口时触发
-function onBrowserWindowCreated(window) {
+function onBrowserWindowCreated(window: BrowserWindow) {
     const original_send = window.webContents.send;
-    const patched_send = (channel, ...args) => {
+    const patched_send = (channel: string, ...args: rendererArgs) => {
         switch (args?.[1]?.[0]?.cmdName) {
             case "nodeIKernelMsgListener/onRecvMsg":
                 // 接收消息
@@ -47,7 +38,7 @@ function onBrowserWindowCreated(window) {
                 break;
         }
         if (!channel.includes("LiteLoader")) {
-            if (args?.[1]?.account?.length > 0 && account == "0") {
+            if (args?.[1]?.account?.length > 0) {
                 window.webContents.send("user-login-main", args[1]);
             }
             // output(channel, JSON.stringify(args[1]));
@@ -62,7 +53,7 @@ function onBrowserWindowCreated(window) {
         return original_send.call(window.webContents, channel, ...args);
     };
     window.webContents.send = patched_send;
-    function ipc_message(_, status, name, ...args) {
+    function ipc_message(_, status: string, name: string, ...args: object[]) {
         if (name !== "___!log" && args[0][1] && args[0][1][0] != "info") {
             const event = args[0][0];
             const data = args[0][1];
@@ -103,16 +94,12 @@ function onBrowserWindowCreated(window) {
 
     const proxyEvents = new Proxy(ipc_message_proxy, {
         // 拦截函数调用
-        apply(target, thisArg, argumentsList) {
-            /**
-            if (argumentsList[3][1] && argumentsList[3][1][0] && argumentsList[3][1][0].includes("fetchGetHitEmotionsByWord")) {
-                // 消息内容数据
-                // 消息内容
-                //output(content.msgElements[0].textElement.content)
-                //content.msgElements[0].textElement.content = "测试"
-                output("ipc-msg被拦截", argumentsList[3][1][1].inputWordInfo.word);
-            }
-             */
+        apply(
+            target,
+            thisArg,
+            argumentsList: [any, string, string, ...object[]]
+        ) {
+            // ipc_message(_, status: string, name: string, ...args: object[])
             ipc_message(...argumentsList);
             return target.apply(thisArg, argumentsList);
         },
@@ -138,6 +125,4 @@ function onBrowserWindowCreated(window) {
 
 onLoad();
 
-module.exports = {
-    onBrowserWindowCreated,
-};
+export { onBrowserWindowCreated };

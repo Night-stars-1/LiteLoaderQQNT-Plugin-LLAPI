@@ -1,66 +1,25 @@
-/*
- * @Author: Night-stars-1
- * @Date: 2023-08-03 23:18:21
-* LastEditors: Night-stars-1 nujj1042633805@gmail.com
-* LastEditTime: 2024-02-17 18:48:36
- * @Description: 借鉴了NTIM, 和其他大佬的代码
- * 
- * Copyright (c) 2023 by Night-stars-1, All Rights Reserved. 
- */
-import { hookVue3 } from "./renderer/vue.js";
-import { apiInstance, qmenu, qGuildMenu } from "./renderer/llapi.js";
-import { output, delay } from "./renderer/utils.js";
-
-//const plugin_path = LiteLoader.plugins.LLAPI.path.plugin;
-//const ipcRenderer_on = LLAPI_PRE.ipcRenderer_LL_on;
-//const ipcRenderer_once = LLAPI_PRE.ipcRenderer_LL_once;
+import { hookVue3 } from "./renderer/vue";
+import { apiInstance, qmenu, qGuildMenu } from "./renderer/llapi";
 
 let first_ckeditorInstance = false
 
-function monitor_qmenu(event) {
-    /**
-    const ckeditorInstance = document.querySelector(".ck.ck-content.ck-editor__editable").ckeditorInstance;
-    const originalset = ckeditorInstance.data.set;
-    const patchedset = new Proxy(originalset, {
-        apply(target, thisArg, argumentsList) {
-            console.log(target, thisArg, argumentsList);
-            return Reflect.apply(target, thisArg, argumentsList);
-        }
-    });
-    ckeditorInstance.data.set = patchedset;
-    
-    const ckeditorInstance = document.querySelector(".ck.ck-content.ck-editor__editable").ckeditorInstance;
-    const originalApplyOperation = ckeditorInstance.editing.model.applyOperation;
-    const patchedApplyOperation = new Proxy(originalApplyOperation, {
-        apply(target, thisArg, argumentsList) {
-            console.log(target, thisArg, argumentsList);
-            return Reflect.apply(target, thisArg, argumentsList);
-        }
-    });
-    ckeditorInstance.editing.model.applyOperation = patchedApplyOperation;
-     */
+declare var qContextMenu: HTMLElement;
+declare var navigation: Performance;
+
+function monitor_qmenu(this: any, event: { target: any; }) {
     let { target } = event
     const { classList } = target
     if (classList?.[0] !== "q-context-menu" && typeof qContextMenu !== "undefined" && (qContextMenu.innerText.includes("转发") || qContextMenu.innerText.includes("转文字"))) {
         const msgIds = target.closest(".ml-item")?.id
         if (qContextMenu.innerText.includes("转文字")) {
-            target.classList = ["ptt-element__progress"]
+            target.classList.add("ptt-element__progress")
         }
         apiInstance.emit("context-msg-menu", event, target, msgIds);
     }
 }
 
 function onLoad() {
-    // 扩展 CanvasRenderingContext2D 原型链
-    /**
-    CanvasRenderingContext2D.prototype._originalDrawFunction = CanvasRenderingContext2D.prototype.drawImage;
-
-    CanvasRenderingContext2D.prototype.drawImage = function (image, ...args) {
-        output('Drawing with custom interception:', image);
-        return this._originalDrawFunction.call(this, image, ...args);
-    };
-    */
-    const observer = new MutationObserver((mutationsList, observer) => {
+    const observer = new MutationObserver((mutationsList: LLAPIMutationRecord[], observer) => {
         // 遍历每个变化
         for (const { type, addedNodes } of mutationsList) {
             if (type !== 'childList') continue;
@@ -68,10 +27,10 @@ function onLoad() {
             addedNodes.forEach(node => {
                 // 判断节点是否为元素节点
                 if (node.nodeType === Node.ELEMENT_NODE) {
-                    node.querySelectorAll('.image.pic-element').forEach((img_node) => {
+                    node.querySelectorAll('.image.pic-element').forEach(img_node => {
                         img_node.addEventListener('contextmenu', monitor_qmenu)
                     })
-                    node.querySelectorAll('.image.market-face-element').forEach((img_node) => { 
+                    node.querySelectorAll('.image.market-face-element').forEach(img_node => { 
                         img_node.addEventListener('contextmenu', monitor_qmenu)
                     })
                 }

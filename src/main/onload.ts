@@ -1,12 +1,21 @@
-const { ipcMain } = require("electron");
-const fs = require("fs");
-const path = require("path");
+/*
+ * @Author: Night-stars-1 nujj1042633805@gmail.com
+ * @Date: 2024-02-18 21:14:44
+ * @LastEditors: Night-stars-1 nujj1042633805@gmail.com
+ * @LastEditTime: 2024-02-18 21:55:49
+ */
+import { ipcMain } from "electron";
+import fs from "node:fs";
+import path from "node:path";
 
-const { clearDirectory, getFileHeader } = require("./utils");
-const { encode, getDuration } = require("../../silk-wasm");
+import { encode, getDuration } from "silk-wasm";
+import { clearDirectory, getFileHeader, output } from "./utils";
+
 
 const peer = {};
 const pendingCallbacks = {};
+
+declare var LiteLoader: LiteLoader;
 
 function onLoad() {
     const pluginDataPath = LiteLoader.plugins.LLAPI.path.data;
@@ -83,8 +92,4 @@ function onLoad() {
     });
 }
 
-module.exports = {
-    peer,
-    onLoad,
-    pendingCallbacks
-}
+export { peer, onLoad, pendingCallbacks };

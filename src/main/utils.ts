@@ -1,8 +1,11 @@
-const fs = require("fs");
-const path = require("path");
+import fs from "node:fs";
+import path from "node:path";
 
-// 清理文件夹的函数
-function clearDirectory(directory) {
+/**
+ * 清理文件夹
+ * @param directory 文件夹路径
+ */
+function clearDirectory(directory: string) {
     // 读取文件夹中的所有文件和文件夹
     const files = fs.readdirSync(directory);
 
@@ -22,14 +25,18 @@ function clearDirectory(directory) {
     }
 }
 
-function getFileHeader(filePath) {
+/**
+ * 获取文件头部字节
+ * @param filePath 文件路径
+ * @returns 文件头部字节
+ */
+function getFileHeader(filePath: string) {
     // 定义要读取的字节数
     const bytesToRead = 7;
     try {
         const buffer = fs.readFileSync(filePath, {
             encoding: null,
             flag: "r",
-            length: bytesToRead,
         });
 
         const fileHeader = buffer.toString("hex", 0, bytesToRead);
@@ -40,12 +47,12 @@ function getFileHeader(filePath) {
     }
 }
 
-function output(...args) {
+/**
+ * 打印输出
+ * @param args 消息内容
+ */
+function output(...args: any[]) {
     console.log("\x1b[32m[LLAPI]\x1b[0m", ...args);
 }
 
-module.exports = {
-    output,
-    clearDirectory,
-    getFileHeader,
-};
+export { output, clearDirectory, getFileHeader };

@@ -1,14 +1,14 @@
-import { media } from "./media.js";
+import { media } from "./media";
 
 class Constructor {
-    constructTextElement(ele) {
+    constructTextElement(ele: Element) {
         return {
             type: "text",
             content: ele.textElement.content,
             raw: ele,
         };
     }
-    constructFaceElement(ele) {
+    constructFaceElement(ele: Element) {
         return {
             type: "face",
             faceIndex: ele.faceElement.faceIndex,
@@ -17,13 +17,13 @@ class Constructor {
             raw: ele,
         };
     }
-    constructRawElement(ele) {
+    constructRawElement(ele: Element) {
         return {
             type: "raw",
             raw: ele,
         };
     }
-    constructImageElement(ele, msg) {
+    constructImageElement(ele: Element, msg: Message) {
         return {
             type: "image",
             file: ele.picElement.sourcePath,
@@ -31,7 +31,7 @@ class Constructor {
             raw: ele,
         };
     }
-    constructMessage(msg) {
+    constructMessage(msg: Message) {
         const downloadedPromises = [];
         const elements = (msg.elements).map((ele) => {
             if (ele.elementType == 1) return this.constructTextElement(ele);
@@ -58,7 +58,7 @@ class Constructor {
             raw: msg,
         };
     }
-    constructUser(user) {
+    constructUser(user: User) {
         return {
             uid: user.uid,
             qid: user.qid,
@@ -70,7 +70,7 @@ class Constructor {
             raw: user,
         };
     }
-    constructGroup(group) {
+    constructGroup(group: Group) {
         return {
             uid: group.groupCode,
             avatarUrl: group.avatarUrl,
@@ -81,7 +81,7 @@ class Constructor {
             raw: group,
         };
     }
-    constructFace(id, label, path) {
+    constructFace(id: string, label: string, path: string) {
         // 创建 msg-qqface 元素
         const msgQQFace = document.createElement('msg-qqface');
         // 设置 data 属性的值
@@ -103,9 +103,10 @@ class Constructor {
         msgQQFace.setAttribute('data', JSON.stringify(dataValue));
         return msgQQFace.outerHTML;
     }
-    test() {
-        console.log("test");
-    }
 }
 
-export const constructor = new Constructor();
+const constructor = new Constructor();
+
+export {
+    constructor
+}
