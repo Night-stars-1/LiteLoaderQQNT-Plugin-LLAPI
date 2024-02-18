@@ -231,7 +231,13 @@ function onLoad() {
   ipcMain.handle("LiteLoader.LLAPI_PRE.getSilk", async (event, filePath) => {
     try {
       const fileName = path.basename(filePath);
-      const pcm = fs.readFileSync(filePath);
+      const ext = path.extname(filePath).toLowerCase()
+      if (ext === ".silk") {
+        const silk_old = fs.readFileSync(filePath);
+        const pcm = await decode(silk_old, 24000).data;
+      } else if (ext === ".wav" || ext === ".pcm") {
+        const pcm = fs.readFileSync(filePath);
+      }
       const silk = await encode(pcm, 24000);
       fs.writeFileSync(`${pttPath}/${fileName}`, silk.data);
       return {
