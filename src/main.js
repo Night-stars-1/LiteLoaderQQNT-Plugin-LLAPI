@@ -187,58 +187,60 @@ function onLoad() {
         if (!event.returnValue) event.returnValue = { enabled: false };
     });
 
-    ipcMain.on("___!log", (event, level, ...args) => {
-        console[
-            { 0: "debug", 1: "log", 2: "info", 3: "warn", 4: "error" }[level] ||
-                "log"
-        ](`[!Renderer:Log:${event.sender.id}]`, ...args);
-    });
-    // 安装
-    ipcMain.handle("LiteLoader.LLAPI_PRE.log", (event, ...message) => {
-        console.log(...message);
-    });
-    ipcMain.handle(
-        "LiteLoader.LLAPI_PRE.set_id",
-        (event, id, webContentsId) => {
-            try {
-                pendingCallbacks[id] = "LL_DOWN_" + id;
-            } catch (error) {
-                output(error);
-                return {};
-            }
-        }
-    );
-    ipcMain.handle("LiteLoader.LLAPI_PRE.get_peer", (event) => {
-        try {
-            return peer;
-        } catch (error) {
-            output(error);
-            return {};
-        }
-    });
-    ipcMain.handle("LiteLoader.LLAPI_PRE.exists", (event, filePath) => {
-        try {
-            return existsSync(filePath);
-        } catch (error) {
-            console.log(error);
-            return {};
-        }
-    });
-    ipcMain.handle("LiteLoader.LLAPI_PRE.getSilk", async (event, filePath) => {
-        try {
-            const fileName = path.basename(filePath);
-            const pcm = fs.readFileSync(filePath);
-            const silk = await encode(pcm, 24000);
-            fs.writeFileSync(`${pttPath}/${fileName}`, silk.data);
-            return {
-                path: `${pttPath}/${fileName}`,
-                duration: silk.duration,
-            };
-        } catch (error) {
-            console.log(error);
-            return {};
-        }
-    });
+  ipcMain.on("___!log", (event, level, ...args) => {
+    console[
+      { 0: "debug", 1: "log", 2: "info", 3: "warn", 4: "error" }[level] || "log"
+    ](`[!Renderer:Log:${event.sender.id}]`, ...args);
+  });
+  // 安装
+  ipcMain.handle("LiteLoader.LLAPI_PRE.log", (event, ...message) => {
+    console.log(...message);
+  });
+  ipcMain.handle("LiteLoader.LLAPI_PRE.set_id", (event, id, webContentsId) => {
+    try {
+      pendingCallbacks[id] = "LL_DOWN_" + id;
+    } catch (error) {
+      output(error);
+      return {};
+    }
+  });
+  ipcMain.handle("LiteLoader.LLAPI_PRE.get_peer", (event) => {
+    try {
+      return peer;
+    } catch (error) {
+      output(error);
+      return {};
+    }
+  });
+  ipcMain.handle("LiteLoader.LLAPI_PRE.exists", (event, filePath) => {
+    try {
+      return existsSync(filePath);
+    } catch (error) {
+      console.log(error);
+      return {};
+    }
+  });
+  ipcMain.handle("LiteLoader.LLAPI_PRE.getSilk", async (event, filePath) => {
+    try {
+      const fileName = path.basename(filePath);
+      const ext = path.extname(filePath).toLowerCase()
+      if (ext === ".silk") {
+        const silk_old = fs.readFileSync(filePath);
+        const pcm = await decode(silk_old, 24000).data;
+      } else if (ext === ".wav" || ext === ".pcm") {
+        const pcm = fs.readFileSync(filePath);
+      }
+      const silk = await encode(pcm, 24000);
+      fs.writeFileSync(`${pttPath}/${fileName}`, silk.data);
+      return {
+        path: `${pttPath}/${fileName}`,
+        duration: silk.duration,
+      };
+    } catch (error) {
+      console.log(error);
+      return {};
+    }
+  });
 }
 
 function output(...args) {
