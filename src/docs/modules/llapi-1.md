@@ -4,6 +4,12 @@
 
 ## Table of contents
 
-### Namespaces
+### References
 
-- [LLAPI](llapi.LLAPI.md)
+- [LLAPI](llapi-1.md#llapi)
+
+## References
+
+### LLAPI
+
+Re-exports [LLAPI](llapi.LLAPI.md)
