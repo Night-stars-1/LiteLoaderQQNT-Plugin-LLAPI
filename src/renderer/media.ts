@@ -1,4 +1,10 @@
 /*
+ * @Author: Night-stars-1 nujj1042633805@gmail.com
+ * @Date: 2024-02-18 21:14:44
+ * @LastEditors: Night-stars-1 nujj1042633805@gmail.com
+ * @LastEditTime: 2024-02-19 17:25:07
+ */
+/*
  * @Date: 2024-01-17 16:34:19
 * LastEditors: Night-stars-1 nujj1042633805@gmail.com
 * LastEditTime: 2024-02-14 23:21:00
@@ -11,8 +17,8 @@ const getSilk = LLAPI_PRE.getSilk;
 
 class Media {
     async prepareImageElement(file: string) {
-        const type = await ntCall("ns-FsApi", "getFileType", [file]);
-        const md5 = await ntCall("ns-FsApi", "getFileMd5", [file]);
+        const type: any = await ntCall("ns-FsApi", "getFileType", [file]);
+        const md5: string = await ntCall("ns-FsApi", "getFileMd5", [file]);
         const fileName = `${md5}.${type.ext}`;
         const filePath = await ntCall("ns-ntApi", "nodeIKernelMsgService/getRichMediaFilePathForGuild", [
             {

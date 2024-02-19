@@ -68,7 +68,7 @@ function output(...args: any[]) {
     console.log("\x1b[32m[LLAPI-渲染]\x1b[0m", ...args);
 }
 
-function ntCall(eventName: string, cmdName: string, args: any[], isRegister = false) {
+function ntCall(eventName: string, cmdName: string, args: any[], isRegister = false): any {
     return new Promise(async (resolve, reject) => {
         const uuid = crypto.randomUUID();
         ipcRenderer_on(`LL_DOWN_${uuid}`, (_: any, data: unknown) => {

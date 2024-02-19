@@ -1,40 +1,3 @@
-import "./element"
-import TypedEmitter from "typed-emitter";
-
-type message = {
-    /** 类型 */
-    type: "text" | "qqFace" | "pic" | string;
-    /** 文本内容 */
-    content?: string;
-    /** 表情ID */
-    id?: string;
-    /** 标签标签 */
-    label?: string;
-    /** 表情路径 */
-    path?: string;
-    /** 图片路径 */
-    src?: string;
-    /** 图片子类型 */
-    picSubType?: number;
-};
-
-type Peer = {
-    /** 消息类型
-     *
-     * 1:私聊
-     *
-     * 2:群聊
-     */
-    chatType: number;
-    /**
-     * 群聊: 群号
-     *
-     * 私聊: QQ代号->u_
-     */
-    peerUid: string;
-    guildId: string;
-    uid: string;
-};
 
 declare namespace LLAPI {
     /**
@@ -84,12 +47,12 @@ declare namespace LLAPI {
      *      picSubType: 0,
      * }
      */
-    function add_editor(message: message): boolean;
+    function add_editor(message: editorMessage): boolean;
     /**
      * @description 设置消息编辑栏的内容
      * @param message 消息内容
      */
-    function set_editor(message: any): boolean;
+    function set_editor(message: string): boolean;
     /**
      * @description 删除消息编辑栏的指定类型内容(实验性)
      * @param type 消息类型
@@ -159,7 +122,7 @@ declare namespace LLAPI {
      *    content: "一条消息"
         }]
      */
-    async function sendMessage(peer: Peer, elements: message): Promise<boolean>;
+    async function sendMessage(peer: Peer, elements: message[]): Promise<boolean>;
     /**
      * @description 撤回消息
      * @param peer 对方的Peer

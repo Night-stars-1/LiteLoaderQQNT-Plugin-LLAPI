@@ -1,14 +1,19 @@
 {
   "version": "1.0.0",
   "scripts": {
-    "build": "ts-node build.ts"
+    "build": "ts-node build.ts",
+    "docs": "typedoc"
   },
   "devDependencies": {
-    "@types/node": "^20.8.9",
-    "esbuild": "^0.19.5",
-    "typescript": "^5.2.2"
+    "@ckeditor/ckeditor5-typing": "^41.1.0",
+    "typedoc": "^0.25.8",
+    "typedoc-plugin-markdown": "^3.17.1"
   },
   "dependencies": {
-    "silk-wasm": "^3.2.3"
+    "@types/jquery": "^3.5.29",
+    "@types/node": "^20.8.9",
+    "esbuild": "^0.19.5",
+    "silk-wasm": "^3.2.3",
+    "typescript": "^5.2.2"
   }
 }

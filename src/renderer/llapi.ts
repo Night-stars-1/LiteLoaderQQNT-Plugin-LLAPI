@@ -4,10 +4,10 @@ import { destructor } from "./destructor";
 import { media } from "./media";
 import { output, ntCall } from "./utils";
 
-let sendRecords = []
+let sendRecords = [];
 
-export const qmenu = []
-export const qGuildMenu = []
+export const qmenu = [];
+export const qGuildMenu = [];
 
 declare var LLAPI_PRE: any;
 const ipcRenderer_on = LLAPI_PRE.ipcRenderer_LL_on;
@@ -39,7 +39,7 @@ class Api extends EventEmitter {
      */
     /**
      * @description 添加消息编辑栏的内容(实验性)
-     * @param {string|HTMLElement} message 消息内容
+     * @param message 消息内容
      * @returns true/false
      * @example
      * LLAPI.add_editor(message)
@@ -60,14 +60,16 @@ class Api extends EventEmitter {
      *      picSubType: 0,
      * }
      */
-    add_editor(message) {
+    add_editor(message: editorMessage) {
         try {
-            let emojiElement
-            const ckeditorInstance = document.querySelector(".ck.ck-content.ck-editor__editable").ckeditorInstance;
+            let emojiElement;
+            const ckeditorInstance = document.querySelector(
+                ".ck.ck-content.ck-editor__editable"
+            ).ckeditorInstance;
             const editorModel = ckeditorInstance.model; // 获取编辑器的 model
             const editorSelection = editorModel.document.selection; // 获取光标的当前选择
             const position = editorSelection.getFirstPosition(); // 获取当前光标的位置
-            editorModel.change(writer => {
+            editorModel.change((writer) => {
                 if (message.type == "qqFace") {
                     const data = {
                         type: "qqFace",
@@ -81,68 +83,84 @@ class Api extends EventEmitter {
                             sourceType: 1,
                             resultId: "",
                             superisedId: "",
-                            randomType: 1
-                        }
-                    }
+                            randomType: 1,
+                        },
+                    };
                     const emojiData = {
-                        data: JSON.stringify(data)
-                    }
-                    emojiElement = writer.createElement('msg-qqface', emojiData);
+                        data: JSON.stringify(data),
+                    };
+                    emojiElement = writer.createElement(
+                        "msg-qqface",
+                        emojiData
+                    );
                 } else if (message.type == "pic") {
                     const data = {
-                        "type": "pic",
-                        "src": message.src,
-                        "picSubType": 0
-                    }
+                        type: "pic",
+                        src: message.src,
+                        picSubType: 0,
+                    };
                     const emojiData = {
-                        data: JSON.stringify(data)
-                    }
-                    emojiElement = writer.createElement('msg-img', emojiData);
+                        data: JSON.stringify(data),
+                    };
+                    emojiElement = writer.createElement("msg-img", emojiData);
                 } else if (message.type == "text") {
-                    emojiElement = message.content
+                    emojiElement = message.content;
                 }
                 writer.insert(emojiElement, position);
             });
-            return true
+            return true;
         } catch (error) {
-            return false
+            return false;
         }
     }
     /**
      * @description 设置消息编辑栏的内容
-     * @param {string|HTMLElement} message 消息内容
+     * @param {string} message 消息内容
      * @returns true/false
      */
-    set_editor(message) {
+    set_editor(message: string) {
         try {
-            const select = window.getSelection()
-            document.querySelector(".ck.ck-content.ck-editor__editable").ckeditorInstance.setData(message)
-            const msg_list = document.querySelector(".ck.ck-content p")
-            select.collapse(msg_list.childNodes[msg_list.childNodes.length-1])
+            const select = window.getSelection();
+            document
+                .querySelector(".ck.ck-content.ck-editor__editable")
+                .ckeditorInstance.setData(message);
+            const msg_list = document.querySelector(".ck.ck-content p");
+            select.collapse(
+                msg_list.childNodes[msg_list.childNodes.length - 1]
+            );
             select.modify("move", "forward", "paragraph");
             ///select.collapseToEnd()
-            return true
+            return true;
         } catch (error) {
-            return false
+            return false;
         }
     }
     /**
      * @description 删除消息编辑栏的指定类型内容(实验性)
-     * @param {string} type 消息类型
-     * @param {boolean} space 是否删除空格
+     * @param type 消息类型
+     * @param space 是否删除空格
      * @returns true/false
      */
-    del_editor(type, space=false) {
+    del_editor(type: string, space = false) {
         try {
-            const ckeditorInstance = document.querySelector(".ck.ck-content.ck-editor__editable").ckeditorInstance;
+            const ckeditorInstance = document.querySelector(
+                ".ck.ck-content.ck-editor__editable"
+            ).ckeditorInstance;
             const editorModel = ckeditorInstance.model; // 获取编辑器的 model
-            editorModel.change(writer => {
-                const root = editorModel.document.getRoot()
+            editorModel.change((writer) => {
+                const root = editorModel.document.getRoot();
                 const firstParagraph = root.getChild(1) ?? root.getChild(0);
-                if (firstParagraph && firstParagraph.is('element', 'paragraph')) {
+                if (
+                    firstParagraph &&
+                    firstParagraph.is("element", "paragraph")
+                ) {
                     // 获取所有子节点
-                    const children = Array.from(firstParagraph.getChildren());
-                    const find_children = children.find(child => child.name == type);
+                    const children: any = Array.from(
+                        firstParagraph.getChildren()
+                    );
+                    const find_children = children.find(
+                        (child: { name: string }) => child.name == type
+                    );
                     writer.remove(find_children);
                     if (space) {
                         // 获取当前的选择对象
@@ -159,24 +177,27 @@ class Api extends EventEmitter {
                     }
                 }
             });
-            return true
+            return true;
         } catch (error) {
-            return false
+            return false;
         }
     }
     /**
      * @description 获取消息编辑栏的内容
      */
     get_editor() {
-        return document.querySelector(".ck.ck-content.ck-editor__editable").ckeditorInstance.getData()
+        const ckeditorInstance = document.querySelector(
+            ".ck.ck-content.ck-editor__editable"
+        ).ckeditorInstance;
+        return ckeditorInstance.getData();
     }
     /**
      * @description 添加聊天消息(不保存)(未完成)
-     * @param {string|HTMLElement} peer 对方的ID
-     * @param {string|HTMLElement} message 消息内容
+     * @param peer 对方的ID
+     * @param message 消息内容
      * @returns true/false
      */
-    add_message_list(peer, message) {
+    add_message_list(peer: Peer, message: unknown) {
         LLAPI_PRE.ipcRenderer_LL.send("___!add_message_list", peer, message);
     }
     /**
@@ -188,8 +209,8 @@ class Api extends EventEmitter {
      *     qContextMenu.insertAdjacentHTML('beforeend', repeatmsgHTML)
      * }
      */
-    add_qmenu(...func) {
-        qmenu.push(func)
+    add_qmenu(...func: object[]) {
+        qmenu.push(func);
     }
     /**
      * @description 添加QQ频道消息的右键菜单项目
@@ -200,28 +221,39 @@ class Api extends EventEmitter {
      *     qContextMenu.insertAdjacentHTML('beforeend', repeatmsgHTML)
      * }
      */
-    add_qGuildMenu(...func) {
-        qGuildMenu.push(func)
+    add_qGuildMenu(...func: object[]) {
+        qGuildMenu.push(func);
     }
     /**
      * @description 获取当前用户信息
      * @returns uid: number, uin: number
      */
     async getAccountInfo() {
-        return await ntCall("ns-GlobalDataApi", "fetchAuthData", []).then((data) => {
-            if (!data) return;
-            return { uid: data.uid, uin: data.uin };
-        });
+        return await ntCall("ns-GlobalDataApi", "fetchAuthData", []).then(
+            (data: { uid: string, uin: string}) => {
+                if (!data) return;
+                return { uid: data.uid, uin: data.uin };
+            }
+        );
     }
     /**
      * @description 获取当前用户的详细信息
-     * @param {number} uid QQ代号
+     * @param uid QQ代号
      * @returns nickName: 名称, age: 年龄等
      */
-    async getUserInfo(uid) {
-        ntCall("ns-ntApi", "nodeIKernelProfileService/getUserSimpleInfo", [{force:true,uids:[uid]}, undefined]);
+    async getUserInfo(uid: string) {
+        ntCall("ns-ntApi", "nodeIKernelProfileService/getUserSimpleInfo", [
+            { force: true, uids: [uid] },
+            undefined,
+        ]);
         return await new Promise((resolve) => {
-            this.once("user-info-list", (args) => resolve(constructor.constructUser(args?.[1]?.[0]?.payload?.profiles?.get(uid))));
+            this.once("user-info-list", (args: { payload: { profiles: { get: (arg0: string) => User; }; }; }[][]) =>
+                resolve(
+                    constructor.constructUser(
+                        args?.[1]?.[0]?.payload?.profiles?.get(uid)
+                    )
+                )
+            );
         });
     }
     /**
@@ -229,35 +261,50 @@ class Api extends EventEmitter {
      * @returns peer
      */
     async getPeer() {
-        const peer = await LLAPI_PRE.get_peer()
+        const peer = await LLAPI_PRE.get_peer();
         return peer;
     }
     /**
      * @description 发送消息
-     * @param {Peer} peer 对方的ID
-     * @param {MessageElement[]} elements
+     * @param peer 对方的ID
+     * @param elements
      * elements: [{
      *    type: "text",
      *    content: "一条消息"
         }]
      */
-    async sendMessage(peer, elements) {
+    async sendMessage(peer: Peer, elements: message[]) {
         ntCall("ns-ntApi", "nodeIKernelMsgService/sendMsg", [
             {
                 msgId: "0",
                 peer: destructor.destructPeer(peer),
                 msgElements: await Promise.all(
                     elements.map(async (element) => {
-                        if (element.type == "text") return destructor.destructTextElement(element);
-                        else if (element.type == "reply") return destructor.destructReplyElement(element);
-                        else if (element.type == "image") return destructor.destructImageElement(element, await media.prepareImageElement(element.file));
-                        else if (element.type == "voice" || element.type == "ptt") return destructor.destructPttElement(element, await media.preparePttElement(element.file));
-                        else if (element.type == "face") return destructor.destructFaceElement(element);
-                        else if (element.type == "raw") return destructor.destructRawElement(element);
+                        if (element.type == "text")
+                            return destructor.destructTextElement(element);
+                        else if (element.type == "reply")
+                            return destructor.destructReplyElement(element);
+                        else if (element.type == "image")
+                            return destructor.destructImageElement(
+                                element,
+                                await media.prepareImageElement(element.file)
+                            );
+                        else if (
+                            element.type == "voice" ||
+                            element.type == "ptt"
+                        )
+                            return destructor.destructPttElement(
+                                element,
+                                await media.preparePttElement(element.file)
+                            );
+                        else if (element.type == "face")
+                            return destructor.destructFaceElement(element);
+                        else if (element.type == "raw")
+                            return destructor.destructRawElement(element);
                         else return null;
-                    }),
+                    })
                 ),
-                msgAttributeInfos: new Map()
+                msgAttributeInfos: new Map(),
             },
             null,
         ]);
@@ -272,14 +319,14 @@ class Api extends EventEmitter {
                 }
             });
         }
-        return checkSendRecord()
+        return checkSendRecord();
     }
     /**
      * 撤回消息
-     * @param {Peer} peer 对方的Peer
-     * @param {string[]} msgIds 消息ID的列表
+     * @param peer 对方的Peer
+     * @param msgIds 消息ID的列表
      */
-    async recallMessage(peer, msgIds) {
+    async recallMessage(peer: Peer, msgIds: string[]) {
         ntCall("ns-ntApi", "nodeIKernelMsgService/recallMsg", [
             {
                 msgIds,
@@ -290,62 +337,72 @@ class Api extends EventEmitter {
     }
     /**
      * @description 转发消息
-     * @param {Peer} srcpeer 消息来源的Peer
-     * @param {Peer} dstpeer 转发对象的Peer
-     * @param {string[]} msgIds 消息ID的列表
+     * @param srcpeer 消息来源的Peer
+     * @param dstpeer 转发对象的Peer
+     * @param msgIds 消息ID的列表
      */
-    async forwardMessage(srcpeer, dstpeer, msgIds) {
+    async forwardMessage(srcpeer: Peer, dstpeer: Peer, msgIds: string[]) {
         ntCall("ns-ntApi", "nodeIKernelMsgService/forwardMsgWithComment", [
             {
                 msgIds: msgIds,
                 srcContact: destructor.destructPeer(srcpeer),
-                dstContacts: [
-                    destructor.destructPeer(dstpeer)
-                ],
+                dstContacts: [destructor.destructPeer(dstpeer)],
                 commentElements: [],
-                msgAttributeInfos: new Map()
+                msgAttributeInfos: new Map(),
             },
             null,
         ]);
     }
     /**
      * @description 获取好友列表
-     * @param {boolean} forced 是否强制更新
+     * @param forced 是否强制更新
      */
     async getFriendsList(forced = false) {
-        ntCall("ns-ntApi", "nodeIKernelBuddyService/getBuddyList", [{ force_update: forced }, undefined]);
+        ntCall("ns-ntApi", "nodeIKernelBuddyService/getBuddyList", [
+            { force_update: forced },
+            undefined,
+        ]);
         return await new Promise((resolve) => {
             this.once("friends-list-updated", (list) => resolve(list));
         });
     }
     /**
      * @description 获取群组列表
-     * @param {boolean} forced 是否强制更新
+     * @param forced 是否强制更新
      */
     async getGroupsList(forced = false) {
-        ntCall("ns-ntApi", "nodeIKernelGroupService/getGroupList", [{ forceFetch: forced }, undefined]);
+        ntCall("ns-ntApi", "nodeIKernelGroupService/getGroupList", [
+            { forceFetch: forced },
+            undefined,
+        ]);
         return await new Promise((resolve) => {
             this.once("groups-list-updated", (list) => resolve(list));
         });
     }
     /**
      * @description 获取历史聊天记录
-     * @param {number} peer 对象的Peer
-     * @param {string} startMsgId 起始消息ID
+     * @param peer 对象的Peer
+     * @param startMsgId 起始消息ID
      * @returns
      */
-    async getPreviousMessages(peer, count = 20, startMsgId = "0") {
+    async getPreviousMessages(peer: Peer, count = 20, startMsgId = "0") {
         try {
-            const msgs = await ntCall("ns-ntApi", "nodeIKernelMsgService/getMsgsIncludeSelf", [
-                {
-                    peer: destructor.destructPeer(peer),
-                    msgId: startMsgId,
-                    cnt: count,
-                    queryOrder: true,
-                },
-                undefined,
-            ]);
-            const messages = (msgs.msgList).map((msg) => constructor.constructMessage(msg));
+            const msgs = await ntCall(
+                "ns-ntApi",
+                "nodeIKernelMsgService/getMsgsIncludeSelf",
+                [
+                    {
+                        peer: destructor.destructPeer(peer),
+                        msgId: startMsgId,
+                        cnt: count,
+                        queryOrder: true,
+                    },
+                    undefined,
+                ]
+            );
+            const messages = msgs.msgList.map((msg) =>
+                constructor.constructMessage(msg)
+            );
             return messages;
         } catch {
             return [];
@@ -353,119 +410,145 @@ class Api extends EventEmitter {
     }
     /**
      * @description 语音转文字(实验性)
-     * @param {string} msgId 消息ID
-     * @param {number} peer 对象的Peer
-     * @param {MessageElement[]} elements
+     * @param msgId 消息ID
+     * @param peer 对象的Peer
+     * @param elements
      */
-    async Ptt2Text(msgId, peer, elements) {
-        const msgElement = JSON.parse(JSON.stringify(elements))
+    async Ptt2Text(msgId: string, peer: Peer, elements: TextElement) {
+        const msgElement = JSON.parse(JSON.stringify(elements));
         await ntCall("ns-ntApi", "nodeIKernelMsgService/translatePtt2Text", [
             {
                 msgId: msgId,
                 peer: destructor.destructPeer(peer),
-                msgElement: msgElement
-            },
-            null
-        ]);
-    }
-    /**
-     * @description 获取群聊成员ID
-     * @param {string} groupId 群聊ID
-     * @param {number} num 数量
-     */
-    async getGroupMemberList(groupId, num=30) {
-        let sceneId = await ntCall("ns-ntApi", "nodeIKernelGroupService/createMemberListScene", [{
-            groupCode: groupId,
-            scene: "groupMemberList_MainWindow"
-        }])
-        return await ntCall("ns-ntApi", "nodeIKernelGroupService/getNextMemberList", [
-            {
-                sceneId: sceneId,
-                num: num
-            },
-            null
-        ]);
-    }
-    /**
-     * @description 重置登录信息
-     * @param {string} uin QQ号
-     */
-    async resetLoginInfo(uin) {
-        await ntCall("ns-ntApi", "nodeIKernelLoginService/resetLoginInfo", [
-            {
-                uin: uin
-            },
-            null
-        ]);
-    }
-    /**
-     * @description 发送好友赞
-     * @param {String} uid qq代号
-     * @param {Number} count 点赞次数，默认一次
-     */
-    async addLike(uid, count=1) {
-        ntCall("ns-ntApi", "nodeIKernelProfileLikeService/setBuddyProfileLike", [
-            {
-                doLikeUserInfo:{
-                    friendUid:uid,
-                    sourceId:71,
-                    doLikeCount:count,
-                    doLikeTollCount:0
-                }
+                msgElement: msgElement,
             },
             null,
         ]);
     }
+    /**
+     * @description 获取群聊成员ID
+     * @param groupId 群聊ID
+     * @param num 数量
+     */
+    async getGroupMemberList(groupId: string, num = 30) {
+        let sceneId = await ntCall(
+            "ns-ntApi",
+            "nodeIKernelGroupService/createMemberListScene",
+            [
+                {
+                    groupCode: groupId,
+                    scene: "groupMemberList_MainWindow",
+                },
+            ]
+        );
+        return await ntCall(
+            "ns-ntApi",
+            "nodeIKernelGroupService/getNextMemberList",
+            [
+                {
+                    sceneId: sceneId,
+                    num: num,
+                },
+                null,
+            ]
+        );
+    }
+    /**
+     * @description 重置登录信息
+     * @param uin QQ号
+     */
+    async resetLoginInfo(uin: string) {
+        await ntCall("ns-ntApi", "nodeIKernelLoginService/resetLoginInfo", [
+            {
+                uin: uin,
+            },
+            null,
+        ]);
+    }
+    /**
+     * @description 发送好友赞
+     * @param uid qq代号
+     * @param count 点赞次数，默认一次
+     */
+    async addLike(uid: string, count = 1) {
+        ntCall(
+            "ns-ntApi",
+            "nodeIKernelProfileLikeService/setBuddyProfileLike",
+            [
+                {
+                    doLikeUserInfo: {
+                        friendUid: uid,
+                        sourceId: 71,
+                        doLikeCount: count,
+                        doLikeTollCount: 0,
+                    },
+                },
+                null,
+            ]
+        );
+    }
     async test() {
         const peer = await this.getPeer();
-        await this.sendMessage(peer, [{
-            type: "ptt",
-            file: "H:/LiteLoader/xm2467.wav"
-        }]);
+        await this.sendMessage(peer, [
+            {
+                type: "face",
+                content: ""
+            },
+        ]);
     }
 }
 
 export const apiInstance = new Api();
 
-ipcRenderer_on('new_message-main', (event, args) => {
-    const messages = (args?.[1]?.[0]?.payload?.msgList).map((msg) => constructor.constructMessage(msg));
+ipcRenderer_on("new_message-main", (event, args) => {
+    const messages = (args?.[1]?.[0]?.payload?.msgList).map((msg) =>
+        constructor.constructMessage(msg)
+    );
     /**
      * @description 获取新消息
      */
     apiInstance.emit("new-messages", messages);
 });
-ipcRenderer_on('new-send-message-main', (event, args) => {
+ipcRenderer_on("new-send-message-main", (event, args) => {
     // const messages = (args?.[1]?.[0]?.payload?.msgList).map((msg) => constructor.constructMessage(msg));
     /**
      * @description 消息发送成功
      */
-    let sendMsg = args?.[1]?.[0]?.payload?.msgRecord
-    sendMsg = constructor.constructMessage(sendMsg)
+    let sendMsg = args?.[1]?.[0]?.payload?.msgRecord;
+    sendMsg = constructor.constructMessage(sendMsg);
     /*
-    * {
-    *   msgId: string,
-    * }
-    * */
+     * {
+     *   msgId: string,
+     * }
+     * */
     // console.log("new-send-message-main", sendMsg)
-    sendRecords.push(sendMsg)
+    sendRecords.push(sendMsg);
     apiInstance.emit("new-send-messages", [sendMsg]);
 });
-ipcRenderer_on('user-info-list-main', (event, args) => {
+ipcRenderer_on("user-info-list-main", (event, args) => {
     apiInstance.emit("user-info-list", args);
 });
-ipcRenderer_on('set_message-main', (event) => {
+ipcRenderer_on("set_message-main", (event) => {
     apiInstance.emit("set_message");
 });
-ipcRenderer_on('groups-list-updated-main', (event, args) => {
-    const groupsList = ((args[1]?.[0]?.payload?.groupList || [])).map((group) => constructor.constructGroup(group));
+ipcRenderer_on("groups-list-updated-main", (event, args) => {
+    const groupsList = (args[1]?.[0]?.payload?.groupList || []).map((group) =>
+        constructor.constructGroup(group)
+    );
     apiInstance.emit("groups-list-updated", groupsList);
 });
-ipcRenderer_on('friends-list-updated-main', (event, args) => {
+ipcRenderer_on("friends-list-updated-main", (event, args) => {
     const friendsList = [];
-    ((args?.[1]?.[0]?.payload?.data || [])).forEach((category) => friendsList.push(...((category?.buddyList || [])).map((friend) => constructor.constructUser(friend))));
+    (args?.[1]?.[0]?.payload?.data || []).forEach((category) =>
+        friendsList.push(
+            ...(category?.buddyList || []).map((friend) =>
+                constructor.constructUser(friend)
+            )
+        )
+    );
     apiInstance.emit("friends-list-updated", friendsList);
 });
-ipcRenderer_on('user-login-main', (event, userInfo) => {
+ipcRenderer_on("user-login-main", (event, userInfo) => {
     apiInstance.emit("user-login", userInfo);
 });
 Object.defineProperty(window, "LLAPI", {

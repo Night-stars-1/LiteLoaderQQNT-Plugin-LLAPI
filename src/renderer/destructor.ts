@@ -43,7 +43,7 @@ class Destructor {
         };
     }
 
-    destructImageElement(_, picElement: PicElement) {
+    destructImageElement(_, picElement: any) {
         return {
             elementType: 2,
             elementId: "",

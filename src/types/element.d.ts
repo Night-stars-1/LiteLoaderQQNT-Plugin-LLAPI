@@ -159,7 +159,6 @@ interface EmojiZplan {
 }
 
 interface ThumbPath {
-    get(arg0: number): string;
 }
 
 interface TextElement {
