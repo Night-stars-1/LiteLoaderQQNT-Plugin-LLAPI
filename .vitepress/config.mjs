@@ -1,7 +1,7 @@
 /*
  * @Date: 2024-01-20 16:53:41
  * @LastEditors: Night-stars-1 nujj1042633805@gmail.com
- * @LastEditTime: 2024-01-20 16:58:31
+ * @LastEditTime: 2024-02-19 01:35:27
  */
 import { defineConfig } from "vitepress";
 
@@ -29,7 +29,8 @@ export default defineConfig({
                         text: "开始使用",
                         collapsed: false,
                         items: [
-                            { text: "LLAPI", link: "/docs/LLAPI" }
+                            { text: "Modules", link: "/docs/modules" },
+                            { text: "LLAPI", link: "/docs/modules/LLAPI" }
                         ]
                     },
                 ]

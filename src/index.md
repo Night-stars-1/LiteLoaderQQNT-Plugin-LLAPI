@@ -9,7 +9,7 @@ hero:
   actions:
     - theme: brand
       text: 开始使用
-      link: /docs/LLAPI
+      link: /docs/modules
 
     - theme: alt
       text: GitHub
