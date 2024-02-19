@@ -12,6 +12,7 @@ export default defineConfig({
     lang: "zh-Hans",
     title: "LLAPI",
     description: "封装部分API，简化开发",
+    ignoreDeadLinks: true,
     sitemap: {
         hostname: "https://llapi.srap.link"
     },
